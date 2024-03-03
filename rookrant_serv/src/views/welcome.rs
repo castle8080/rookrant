@@ -1,19 +1,9 @@
-use maud::{DOCTYPE, html, Markup};
+use maud::{html, Markup};
+use crate::views::main_layout::main_layout;
+use crate::services::user_repository::User;
 
-pub fn index() -> Markup {
-    html! {
-        (DOCTYPE)
-        head {
-            title { "Rook Rant" }
-        }
-        body {
-            h1 { "Rook Rant" }
-            ul {
-                li {
-                    a href="/rant_add" { "Start Ranting!" }
-                }
-            }
-        }
-    }
+pub fn index(user: Option<User>) -> Markup {
+    main_layout(user, html!(
+        a href="/rant_add" { "Start Ranting" }
+    ))
 }
-

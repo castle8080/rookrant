@@ -1,5 +1,4 @@
-use std::{result::Result, sync::PoisonError};
-
+use std::{num::ParseFloatError, result::Result, string::FromUtf8Error, sync::PoisonError, time::SystemTimeError};
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -18,12 +17,24 @@ pub enum AppError {
 
     #[error("Concurrency error: {0}")]
     ConcurrencyError(String),
+
+    #[error("Http error: {0}")]
+    HttpError(String),
+
+    #[error("Request input error: {0}")]
+    RequestInputError(String),
+
+    #[error("Authentication error: {0}")]
+    AuthenticationError(String),
+
+    #[error("System error: {0}")]
+    SystemError(String),
 }
 
 pub type AppResult<T> = Result<T, AppError>;
 
-impl From<sqlx::Error> for AppError {
-    fn from(value: sqlx::Error) -> Self {
+impl From<mongodb::error::Error> for AppError {
+    fn from(value: mongodb::error::Error) -> Self {
         Self::DatabaseError(format!("{value}"))
     }
 }
@@ -57,3 +68,46 @@ impl<T> From<PoisonError<T>> for AppError {
         Self::ConcurrencyError(format!("{value}"))
     } 
 }
+
+impl From<axum::http::Error> for AppError {
+    fn from(value: axum::http::Error) -> Self {
+        Self::HttpError(format!("{value}"))
+    } 
+}
+
+impl From<oauth2::url::ParseError> for AppError {
+    fn from(value: oauth2::url::ParseError) -> Self {
+        Self::ParseError(format!("{value}"))
+    }
+}
+
+impl From<ParseFloatError> for AppError {
+    fn from(value: ParseFloatError) -> Self {
+        Self::ParseError(format!("{value}"))
+    }
+}
+
+impl From<jsonwebtoken::errors::Error> for AppError {
+    fn from(value: jsonwebtoken::errors::Error) -> Self {
+        Self::ParseError(format!("{value}"))
+    }
+}
+
+impl From<FromUtf8Error> for AppError {
+    fn from(value: FromUtf8Error) -> Self {
+        Self::ParseError(format!("{value}"))
+    }
+}
+
+impl From<base64::DecodeError> for AppError {
+    fn from(value: base64::DecodeError) -> Self {
+        Self::ParseError(format!("{value}"))
+    }
+}
+
+impl From<SystemTimeError> for AppError {
+    fn from(value: SystemTimeError) -> Self {
+        Self::SystemError(format!("{value}"))
+    }
+}
+

@@ -1,0 +1,31 @@
+
+body {
+    margin: 0;
+}
+
+.app-header {
+    background-color: navy;
+    color: white;
+    text-decoration: none;
+    padding: 0.5em;
+    display: flex;
+}
+
+.app-header a {
+    color: white;
+    text-decoration: none;
+}
+
+.app-header-main-links {
+    flex-grow: 1;
+}
+
+/*
+.app-header-user-links {
+}
+*/
+
+.app-content {
+    padding: 0.5em;
+}
+

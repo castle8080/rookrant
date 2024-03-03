@@ -2,6 +2,7 @@ use std::{net::SocketAddr, str::FromStr};
 use log;
 
 use axum::Router;
+use axum::middleware::from_fn_with_state;
 use axum_server::tls_rustls::RustlsConfig;
 
 use tower_http::trace::TraceLayer;
@@ -14,6 +15,8 @@ mod controllers;
 mod views;
 mod services;
 mod errors;
+mod middleware;
+mod url_constants;
 
 use errors::AppResult;
 
@@ -25,7 +28,7 @@ struct Cli {
     #[arg(long, default_value_t = String::from("127.0.0.1:3000"))]
     listen: String,
 
-    #[arg(long)]
+    #[arg(long, default_value_t = String::from("local"))]
     environment: String,
 }
 
@@ -38,9 +41,17 @@ async fn create_app_handler(environment: &String) -> AppResult<Router> {
     Ok(Router::new()
         .merge(controllers::rant::get_routes())
         .merge(controllers::welcome::get_routes())
-        .with_state(state)
+        .merge(controllers::login::get_routes())
+        .merge(controllers::utils::get_routes())
+        .with_state(state.clone())
         .fallback_service(serve_dir)
-        .layer(ServiceBuilder::new().layer(TraceLayer::new_for_http())))
+        .layer(
+            ServiceBuilder::new()
+                .layer(TraceLayer::new_for_http())
+                .layer(from_fn_with_state(
+                    state.clone(),
+                    middleware::authentication::authentication_layer))
+        ))
 }
 
 #[tokio::main]

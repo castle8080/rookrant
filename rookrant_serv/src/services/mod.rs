@@ -1,6 +1,9 @@
 pub mod state;
 pub mod user_repository;
-pub mod user_repository_pg;
+pub mod user_repository_mongo;
 pub mod config_service;
 pub mod config_service_file;
 pub mod config_service_chain;
+pub mod ms_oath_service;
+pub mod jwt_service;
+pub mod mongo_ext;

@@ -1,5 +1,5 @@
 #!/bin/sh
 
-cargo build --release --target=x86_64-unknown-linux-musl || exit
+cargo build --release || exit
 mkdir -p bin
-cp -v target/x86_64-unknown-linux-musl/release/rookrant_serv bin
+cp -v target/release/rookrant_serv bin

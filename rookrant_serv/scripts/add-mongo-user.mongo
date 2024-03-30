@@ -1,0 +1,10 @@
+use rook
+db.createUser(
+  {
+    user: "rook",
+    pwd: passwordPrompt(),
+    roles: [
+        { role: "readWrite", db: "rook" }
+    ]
+  }
+)

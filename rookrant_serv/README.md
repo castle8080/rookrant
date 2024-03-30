@@ -7,7 +7,7 @@ An app to just rant about anything.
 The app is an example of creating a Rust based web application. It uses:
 * Rust
 * Axum
-* Postgres
+* Mongos
 * Docker
 
 ## Deployment

@@ -1,4 +1,4 @@
-use std::{num::ParseFloatError, result::Result, string::FromUtf8Error, sync::PoisonError, time::SystemTimeError};
+use std::{num::ParseFloatError, string::FromUtf8Error, sync::PoisonError, time::SystemTimeError};
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -29,6 +29,9 @@ pub enum AppError {
 
     #[error("System error: {0}")]
     SystemError(String),
+
+    #[error("Crypto error: {0}")]
+    CryptoError(String),
 }
 
 pub type AppResult<T> = Result<T, AppError>;
@@ -111,3 +114,8 @@ impl From<SystemTimeError> for AppError {
     }
 }
 
+impl From<rcgen::Error> for AppError {
+    fn from(value: rcgen::Error) -> Self {
+        Self::CryptoError(format!("{value}"))
+    }
+}

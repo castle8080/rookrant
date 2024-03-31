@@ -1,5 +1,4 @@
 use std::{net::SocketAddr, str::FromStr};
-use log;
 
 use axum::Router;
 use axum::middleware::from_fn_with_state;
@@ -17,6 +16,7 @@ mod services;
 mod errors;
 mod middleware;
 mod url_constants;
+mod crypto;
 
 use errors::AppResult;
 
@@ -67,6 +67,11 @@ async fn main() -> AppResult<()> {
     log::info!("Listenging to: {}", addr);
 
     if cli.tls {
+        let _ = crypto::certs::generate_self_signed_cert_files(
+            "etc/certs/certificate.pem",
+            "etc/certs/key.pem",
+        )?;
+
         let config = RustlsConfig::from_pem_file(
             "etc/certs/certificate.pem",
             "etc/certs/key.pem",

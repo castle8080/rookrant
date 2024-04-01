@@ -19,6 +19,7 @@ mod url_constants;
 mod crypto;
 
 use errors::AppResult;
+use crypto::certs::generate_self_signed_cert_files_if_not_exists;
 
 #[derive(Parser, Debug)]
 struct Cli {
@@ -66,17 +67,12 @@ async fn main() -> AppResult<()> {
     let addr = SocketAddr::from_str(&cli.listen).unwrap();
     log::info!("Listenging to: {}", addr);
 
-    if cli.tls {
-        let _ = crypto::certs::generate_self_signed_cert_files(
-            "etc/certs/certificate.pem",
-            "etc/certs/key.pem",
-        )?;
+    let cert_file = "etc/certs/certificate.pem";
+    let key_file = "etc/certs/key.pem";
 
-        let config = RustlsConfig::from_pem_file(
-            "etc/certs/certificate.pem",
-            "etc/certs/key.pem",
-        )
-        .await?;
+    if cli.tls {
+        let _ = generate_self_signed_cert_files_if_not_exists(cert_file, key_file)?;
+        let config = RustlsConfig::from_pem_file(cert_file, key_file).await?;
 
         axum_server::bind_rustls(addr, config)
             .serve(app.into_make_service())

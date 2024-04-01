@@ -6,7 +6,7 @@ use std::path::Path;
 
 use crate::AppResult;
 
-pub fn generate_self_signed_cert_files(
+pub fn generate_self_signed_cert_files_if_not_exists(
     pub_file: impl AsRef<str>,
     key_file: impl AsRef<str>)
     -> AppResult<()>
@@ -16,8 +16,20 @@ pub fn generate_self_signed_cert_files(
 
     // Don't create if the files already exist.
     if pub_path.is_file() && key_path.is_file() {
-        return Ok(())
+        Ok(())
     }
+    else {
+        generate_self_signed_cert_files(pub_file, key_file)
+    }
+}
+
+pub fn generate_self_signed_cert_files(
+    pub_file: impl AsRef<str>,
+    key_file: impl AsRef<str>)
+    -> AppResult<()>
+{
+    let pub_path = Path::new(pub_file.as_ref());
+    let key_path = Path::new(key_file.as_ref());
 
     log::info!("Generating a self signed certificate.");
 
